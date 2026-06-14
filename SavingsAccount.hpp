@@ -1,22 +1,27 @@
-#ifndef SAVINGS_ACCOUNT_HPP
-#define SAVINGS_ACCOUNT_HPP
+#include "SavingsAccount.hpp"
 
-#include "Account.hpp"
+#include "BankException.hpp"
 
-class SavingsAccount : public Account {
-public:
-    SavingsAccount(int id, const std::string& holderName,
-                   double initialBalance, double interestRate,
-                   int monthlyWithdrawalLimit);
+SavingsAccount::SavingsAccount(int id, const std::string& holderName,
+                               double initialBalance, double interestRate,
+                               int monthlyWithdrawalLimit)
+    : Account(id, holderName, initialBalance),
+      interestRate_(interestRate),
+      monthlyWithdrawalLimit_(monthlyWithdrawalLimit),
+      withdrawalsThisMonth_(0) {}
 
-    void withdraw(double amount) override;  
-    void applyInterest() override;          
-    std::string typeName() const override;
+void SavingsAccount::withdraw(double amount) {
+    if (withdrawalsThisMonth_ >= monthlyWithdrawalLimit_) {
+        throw BankException("monthly withdrawal limit reached for savings account");
+    }
+    Account::withdraw(amount); 
+    ++withdrawalsThisMonth_;
+}
 
-private:
-    double interestRate_;
-    int monthlyWithdrawalLimit_;
-    int withdrawalsThisMonth_;
-};
+void SavingsAccount::applyInterest() {
+    credit(balance() * interestRate_);
+}
 
-#endif
+std::string SavingsAccount::typeName() const {
+    return "SavingsAccount";
+}
