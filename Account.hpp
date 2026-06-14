@@ -1,57 +1,36 @@
-#include "Account.hpp"
+#ifndef ACCOUNT_HPP
+#define ACCOUNT_HPP
 
-#include "BankException.hpp"
+#include <iostream>
+#include <string>
 
-Account::Account(int id, const std::string& holderName, double initialBalance)
-    : id_(id), holderName_(holderName), balance_(initialBalance) {
-    if (initialBalance < 0) {
-        throw InvalidAmountException("initial balance cannot be negative");
-    }
-}
+class Account {
+public:
+    Account(int id, const std::string& holderName, double initialBalance);
+    virtual ~Account() = default;
 
-void Account::deposit(double amount) {
-    if (amount <= 0) {
-        throw InvalidAmountException("deposit amount must be positive");
-    }
-    balance_ += amount;
-}
+    Account(const Account&) = delete;
+    Account& operator=(const Account&) = delete;
 
-void Account::withdraw(double amount) {
-    if (amount <= 0) {
-        throw InvalidAmountException("withdrawal amount must be positive");
-    }
-    if (balance_ - amount < minimumBalance()) {
-        throw InsufficientFundsException(
-            "withdrawal would leave balance below the allowed minimum");
-    }
-    balance_ -= amount;
-}
+    void deposit(double amount);
+    virtual void withdraw(double amount);
+    virtual void applyInterest() = 0;
+    virtual std::string typeName() const = 0;
 
-void Account::credit(double amount) {
-    if (amount < 0) {
-        throw InvalidAmountException("credit amount cannot be negative");
-    }
-    balance_ += amount;
-}
+    int id() const noexcept;
+    double balance() const noexcept;
 
-double Account::minimumBalance() const {
-    return 0.0;
-}
+    bool operator==(const Account& other) const;
+    friend std::ostream& operator<<(std::ostream& os, const Account& account);
 
-int Account::id() const noexcept {
-    return id_;
-}
+protected:
+    void credit(double amount);
+    virtual double minimumBalance() const;
 
-double Account::balance() const noexcept {
-    return balance_;
-}
+private:
+    int id_;
+    std::string holderName_;
+    double balance_;
+};
 
-bool Account::operator==(const Account& other) const {
-    return id_ == other.id_;
-}
-
-std::ostream& operator<<(std::ostream& os, const Account& account) {
-    os << account.typeName() << " #" << account.id_
-       << " (" << account.holderName_ << ") balance: $" << account.balance_;
-    return os;
-}
+#endif
