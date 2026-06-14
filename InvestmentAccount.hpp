@@ -1,15 +1,18 @@
-#include "InvestmentAccount.hpp"
+#ifndef INVESTMENT_ACCOUNT_HPP
+#define INVESTMENT_ACCOUNT_HPP
 
-InvestmentAccount::InvestmentAccount(int id, const std::string& holderName,
-                                     double initialBalance, double annualRate)
-    : Account(id, holderName, initialBalance),
-      annualRate_(annualRate) {}
+#include "Account.hpp"
 
-void InvestmentAccount::applyInterest() {
-   
-    credit(balance() * (annualRate_ / 12.0));
-}
+class InvestmentAccount final : public Account {
+public:
+    InvestmentAccount(int id, const std::string& holderName,
+                      double initialBalance, double annualRate);
 
-std::string InvestmentAccount::typeName() const {
-    return "InvestmentAccount";
-}
+    void applyInterest() override; 
+    std::string typeName() const override;
+
+private:
+    double annualRate_;
+};
+
+#endif
