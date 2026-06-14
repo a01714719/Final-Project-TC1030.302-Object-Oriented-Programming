@@ -14,6 +14,7 @@ void Account::deposit(double amount) {
         throw InvalidAmountException("deposit amount must be positive");
     }
     balance_ += amount;
+    record("deposit", amount);
 }
 
 void Account::withdraw(double amount) {
@@ -25,6 +26,7 @@ void Account::withdraw(double amount) {
             "withdrawal would leave balance below the allowed minimum");
     }
     balance_ -= amount;
+    record("withdrawal", amount);
 }
 
 void Account::credit(double amount) {
@@ -32,6 +34,7 @@ void Account::credit(double amount) {
         throw InvalidAmountException("credit amount cannot be negative");
     }
     balance_ += amount;
+    record("interest", amount);
 }
 
 double Account::minimumBalance() const {
@@ -46,8 +49,16 @@ double Account::balance() const noexcept {
     return balance_;
 }
 
+const std::vector<Transaction>& Account::history() const noexcept {
+    return history_;
+}
+
 bool Account::operator==(const Account& other) const {
     return id_ == other.id_;
+}
+
+void Account::record(const std::string& kind, double amount) {
+    history_.emplace_back(static_cast<int>(history_.size()) + 1, kind, amount);
 }
 
 std::ostream& operator<<(std::ostream& os, const Account& account) {
