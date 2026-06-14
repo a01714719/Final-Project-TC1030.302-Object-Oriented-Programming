@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+
+#include "Transaction.hpp"
 
 class Account {
 public:
@@ -19,6 +22,7 @@ public:
 
     int id() const noexcept;
     double balance() const noexcept;
+    const std::vector<Transaction>& history() const noexcept;
 
     bool operator==(const Account& other) const;
     friend std::ostream& operator<<(std::ostream& os, const Account& account);
@@ -28,9 +32,12 @@ protected:
     virtual double minimumBalance() const;
 
 private:
+    void record(const std::string& kind, double amount);
+
     int id_;
     std::string holderName_;
     double balance_;
+    std::vector<Transaction> history_;
 };
 
 #endif
