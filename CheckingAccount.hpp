@@ -1,21 +1,18 @@
-#ifndef CHECKING_ACCOUNT_HPP
-#define CHECKING_ACCOUNT_HPP
+#include "CheckingAccount.hpp"
 
-#include "Account.hpp"
+CheckingAccount::CheckingAccount(int id, const std::string& holderName,
+                                 double initialBalance, double overdraftLimit)
+    : Account(id, holderName, initialBalance),
+      overdraftLimit_(overdraftLimit) {}
 
-class CheckingAccount : public Account {
-public:
-    CheckingAccount(int id, const std::string& holderName,
-                    double initialBalance, double overdraftLimit);
+void CheckingAccount::applyInterest() {
+    // Checking accounts do not earn interest.
+}
 
-    void applyInterest() override;  
-    std::string typeName() const override;
+std::string CheckingAccount::typeName() const {
+    return "CheckingAccount";
+}
 
-protected:
-    double minimumBalance() const override; 
-
-private:
-    double overdraftLimit_;
-};
-
-#endif
+double CheckingAccount::minimumBalance() const {
+    return -overdraftLimit_;
+}
